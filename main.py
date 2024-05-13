@@ -1,14 +1,12 @@
-import os
 import telebot
 import cv2
 import numpy as np
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+import os
 import time
 
-# Токен бота из переменных окружения
-TOKEN = os.getenv('TOKEN')
-if not TOKEN:
-    raise ValueError("No TOKEN provided. Set TOKEN environment variable.")
+# Вставьте ваш токен бота прямо здесь
+TOKEN = '6875281030:AAHfvPNS8LQ0nr7baA1oaFaRcqxyYqB290w'
 
 bot = telebot.TeleBot(TOKEN)
 
