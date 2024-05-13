@@ -14,5 +14,5 @@ RUN pip install -r requirements.txt
 # Копируем остальные файлы приложения
 COPY . .
 
-# Запуск бота
-CMD ["python", "main.py"]
+# Запуск приложения с помощью Gunicorn
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "main:app"]
