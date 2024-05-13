@@ -1,14 +1,10 @@
-import telebot
-import cv2
-import numpy as np
-from moviepy.editor import VideoFileClip, concatenate_videoclips
 import os
-import time
+import telebot
+from flask import Flask, request
 
-# Вставьте ваш токен бота прямо здесь
 TOKEN = '6875281030:AAHfvPNS8LQ0nr7baA1oaFaRcqxyYqB290w'
-
 bot = telebot.TeleBot(TOKEN)
+app = Flask(__name__)
 
 # Максимальные ширина и высота видео-сообщения
 MAX_WIDTH = 640
@@ -96,5 +92,17 @@ def safe_delete_file(file_path):
             print(f"Не удалось удалить файл {file_path}: {e}, попытка {attempt + 1}")
             time.sleep(1)  # Задержка перед следующей попыткой
 
-# Запуск бота
-bot.polling(none_stop=True)
+# Путь для вебхука
+@app.route('/' + TOKEN, methods=['POST'])
+def getMessage():
+    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+    return "!", 200
+
+@app.route("/")
+def webhook():
+    bot.remove_webhook()
+    bot.set_webhook(url='https://<your-domain>/' + TOKEN)
+    return "!", 200
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
