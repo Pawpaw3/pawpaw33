@@ -7,6 +7,9 @@ import time
 
 # Токен бота из переменных окружения
 TOKEN = os.getenv('TOKEN')
+if not TOKEN:
+    raise ValueError("No TOKEN provided. Set TOKEN environment variable.")
+
 bot = telebot.TeleBot(TOKEN)
 
 # Максимальные ширина и высота видео-сообщения
