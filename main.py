@@ -1,6 +1,10 @@
 import os
 import telebot
 from flask import Flask, request
+import cv2
+import numpy as np
+from moviepy.editor import VideoFileClip, concatenate_videoclips
+import time
 
 TOKEN = '6875281030:AAHfvPNS8LQ0nr7baA1oaFaRcqxyYqB290w'
 bot = telebot.TeleBot(TOKEN)
@@ -92,7 +96,6 @@ def safe_delete_file(file_path):
             print(f"Не удалось удалить файл {file_path}: {e}, попытка {attempt + 1}")
             time.sleep(1)  # Задержка перед следующей попыткой
 
-# Путь для вебхука
 @app.route('/' + TOKEN, methods=['POST'])
 def getMessage():
     bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
