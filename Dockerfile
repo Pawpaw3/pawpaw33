@@ -15,4 +15,4 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Запуск бота
-CMD ["python", "main.py"]
+CMD ["python", Tebot.py"]
