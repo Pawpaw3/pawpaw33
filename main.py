@@ -1,22 +1,23 @@
-import os
 import telebot
-from flask import Flask, request
 import cv2
 import numpy as np
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+import os
 import time
 
+# Токен бота, полученный через BotFather
 TOKEN = '6875281030:AAHfvPNS8LQ0nr7baA1oaFaRcqxyYqB290w'
 bot = telebot.TeleBot(TOKEN)
-app = Flask(__name__)
 
 # Максимальные ширина и высота видео-сообщения
 MAX_WIDTH = 640
 MAX_HEIGHT = 640
 
+
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     bot.reply_to(message, "Привет! Отправь мне видео, и я преобразую его в круглое видео на белом фоне.")
+
 
 @bot.message_handler(content_types=['video'])
 def handle_video(message):
@@ -47,6 +48,7 @@ def handle_video(message):
     except Exception as e:
         bot.reply_to(message, f'Произошла ошибка: {e}')
 
+
 def process_video_to_circle(input_path):
     clip = VideoFileClip(input_path)
     min_dimension = min(clip.size)
@@ -56,6 +58,7 @@ def process_video_to_circle(input_path):
     output_path = 'output_circle_video.mp4'
     circle_clip.write_videofile(output_path, codec='libx264')
     return output_path
+
 
 def make_frame_circle_with_border(frame):
     h, w = frame.shape[:2]
@@ -69,12 +72,14 @@ def make_frame_circle_with_border(frame):
     circular_frame_with_border += circular_frame
     return circular_frame_with_border
 
+
 def resize_video(input_path, target_width, target_height):
     clip = VideoFileClip(input_path)
     resized_clip = clip.resize((target_width, target_height))
     resized_output_path = 'resized_video.mp4'
     resized_clip.write_videofile(resized_output_path, codec='libx264', audio=False)
     return resized_output_path
+
 
 def merge_audio(original_video_path, resized_video_path):
     original_clip = VideoFileClip(original_video_path)
@@ -83,6 +88,7 @@ def merge_audio(original_video_path, resized_video_path):
     final_output_path = 'final_video.mp4'
     final_clip.write_videofile(final_output_path, codec='libx264')
     return final_output_path
+
 
 def safe_delete_file(file_path):
     """Пытается безопасно удалить файл, повторяя попытку при необходимости."""
@@ -96,16 +102,6 @@ def safe_delete_file(file_path):
             print(f"Не удалось удалить файл {file_path}: {e}, попытка {attempt + 1}")
             time.sleep(1)  # Задержка перед следующей попыткой
 
-@app.route('/' + TOKEN, methods=['POST'])
-def getMessage():
-    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
-    return "!", 200
 
-@app.route("/")
-def webhook():
-    bot.remove_webhook()
-    bot.set_webhook(url='https://<your-domain>/' + TOKEN)
-    return "!", 200
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
+# Запуск бота
+bot.polling(none_stop=True)
