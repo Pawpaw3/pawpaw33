@@ -15,4 +15,4 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Запуск бота
-CMD ["python", maain.py"]
+CMD ["python", "main.py"]
